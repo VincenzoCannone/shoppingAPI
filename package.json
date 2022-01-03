@@ -1,0 +1,29 @@
+{
+  "name": "shoppingapi",
+  "version": "1.0.0",
+  "description": "REST API with MongoDB | Shopping API with Stripe &amp; JWT",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VincenzoCannone/shoppingAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VincenzoCannone/shoppingAPI/issues"
+  },
+  "homepage": "https://github.com/VincenzoCannone/shoppingAPI#readme",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.1.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "js": "^0.1.0",
+    "mongoose": "^6.1.4",
+    "nodemon": "^2.0.15"
+  }
+}
