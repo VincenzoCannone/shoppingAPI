@@ -4,6 +4,7 @@ const User = require("../models/User");
 
 const CryptoJS = require("crypto-js");
 
+const jwt = require("jsonwebtoken");
 //! USER REGISTER
 
 router.post("/register", async (req, res) => {
@@ -32,18 +33,29 @@ router.post("/login", async (req, res) => {
       // if there is no user (!) send an error 401 (&&)
       return res.status(401).json("wrong credentials");
     }
-
+    //! We can use console.log to debug errors in the code
     const hashedPassword = CryptoJS.AES.decrypt(
       user.password,
       process.env.PASS_SEC
     );
 
-    const password = hashedPassword.toString(CryptoJS.enc.Utf8);
+    const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
-    if (password !== req.body.password) {
-      return res.status(401).json("wrong credentials");
+    const accessToken = jwt.sign(
+      {
+        is: user._Id,
+        isAdmin: user.isAdmin,
+      },
+      process.env.JWT_SEC,
+      { expiresIn: "3d" }
+    );
+
+    const { password, ...other } = user._doc;
+
+    if (originalPassword !== req.body.password) {
+      return res.status(401).json("wrong credentials 2");
     } else {
-      return res.status(200).json(user);
+      return res.status(200).json({ ...other, accessToken });
     }
   } catch (err) {
     res.status(500).json(err);
