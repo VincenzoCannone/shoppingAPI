@@ -1,12 +1,9 @@
-const router = require("express").Router(); // we import and start the Router Express
-
+const router = require("express").Router();
 const User = require("../models/User");
-
 const CryptoJS = require("crypto-js");
-
 const jwt = require("jsonwebtoken");
-//! USER REGISTER
 
+//REGISTER
 router.post("/register", async (req, res) => {
   const newUser = new User({
     username: req.body.username,
@@ -16,47 +13,48 @@ router.post("/register", async (req, res) => {
       process.env.PASS_SEC
     ).toString(),
   });
+
   try {
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    const returnedUser = {
+      username: savedUser.username,
+      email: savedUser.email,
+      isAdmin: savedUser.isAdmin,
+    };
+    res.status(201).json(returnedUser);
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
-//! USER LOGIN
+//LOGIN
 
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
-    if (!user) {
-      // if there is no user (!) send an error 401 (&&)
-      return res.status(401).json("wrong credentials");
-    }
-    //! We can use console.log to debug errors in the code
+    !user && res.status(401).json("Wrong credentials!");
+
     const hashedPassword = CryptoJS.AES.decrypt(
       user.password,
       process.env.PASS_SEC
     );
+    const OriginalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
-    const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
+    OriginalPassword !== req.body.password &&
+      res.status(401).json("Wrong credentials!");
 
     const accessToken = jwt.sign(
       {
-        is: user._Id,
+        id: user._id,
         isAdmin: user.isAdmin,
       },
       process.env.JWT_SEC,
       { expiresIn: "3d" }
     );
 
-    const { password, ...other } = user._doc;
+    const { password, ...others } = user._doc;
 
-    if (originalPassword !== req.body.password) {
-      return res.status(401).json("wrong credentials 2");
-    } else {
-      return res.status(200).json({ ...other, accessToken });
-    }
+    res.status(200).json({ ...others, accessToken });
   } catch (err) {
     res.status(500).json(err);
   }
