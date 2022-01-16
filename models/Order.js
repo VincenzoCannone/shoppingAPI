@@ -16,7 +16,7 @@ const OrderSchema = new mongoose.Schema(
 
     amount: { type: Number, required: true },
     address: { type: Object, required: true },
-    status: { type: String, default: "pending..." },
+    status: { type: String, default: "pending..." }, // after shipping we change the default to SHIPPED
   },
 
   { timestamps: true } // to have the CreatedAt and UpdatedAt values
