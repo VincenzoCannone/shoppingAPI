@@ -17,3 +17,5 @@ replace with
 "scripts": {
 "start": "nodemon index.js"
 },
+
+nodemon index  to start your app 
